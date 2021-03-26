@@ -272,7 +272,7 @@ class BaseEmail:
         """
         return self._creds[0]
 
-    def send(self) -> bool:
+    def send(self) -> None:
         """
         Send an email
 
