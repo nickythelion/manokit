@@ -1,0 +1,13 @@
+Manokit is an easy-to-use, powerful and hopefully fully native e-mail sending client, that simplifies everything
+
+It must simplify the whole process to just a handful of function calls and it must be straight-forward
+
+It can:
+    - Send simple plain-text emails via SimpleEmail class (w/ attachments)
+    - Send emails containing HTML elements via HTMLEmail class (w/ attachments)
+    - Interpolate email's subject and body to make it more customizable
+
+It supports:
+    - Multiple recepients
+    - Multiple attachments
+    - All stages of standart email sending process in Python (but simplified)
