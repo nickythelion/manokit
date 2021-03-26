@@ -458,6 +458,15 @@ class HTMLEmail(BaseEmail):
         """
         super().__init__(smtp_server, smtp_port, credentials, _ssl=_ssl)
 
+    @BaseEmail.body.setter
+    def body(self, value) -> None:
+        if not ManokitInternal.contains_html(value):
+            self._body = '<div style="font-family: Verdana; font-color: #262626">{body}</div>'.format(
+                body=value
+            )
+            return
+        self._body = value
+
     def body_from_file(self, file: str) -> None:
         """
         Read content from file and make it email's body
