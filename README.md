@@ -1,21 +1,21 @@
 ### Table of contents
 
--   [Introduction](#sec-intro)
--   [Installation](#sec-installation)
--   [Package overview](#sec-pack-overview)
--   [Simple Emails](#sec-simple-emails)
-    -   [SimpleEmail code examples](#simple-email-examples)
--   [Emails with HTML](#sec-emails-with-html)
-    -   [HTMLEmail code examples](#sec-html-examples)
--   [Similarity is key](#sec-similarity)
+-   [Introduction](#introduction)
+-   [Installation](#installation)
+-   [Package overview](#package-overview)
+-   [Simple Emails](#simple-emails)
+    -   [SimpleEmail code examples](#simpleemail-code-examples)
+-   [Emails with HTML](#emails-with-html)
+    -   [HTMLEmail code examples](#htmlemail-code-examples)
+-   [Similarity is key](#similarity-is-key)
 
-### Introduction {#sec-intro}
+### Introduction 
 
 **Manokit** is an easy-to-use native email sender for Python. That's right! _There is no dependencies!_
 
 With just a few lines of code you will be able to send fancy emails with no headache in sight!
 
-### Installation {#sec-installation}
+### Installation 
 
 You can install this package directly from [PyPI](https://pypi.org/project/manokit) or using pip:
 
@@ -25,7 +25,7 @@ pip install manokit
 
 Also you can download installation-ready archives and project's source code from the [Releases](https://github.com/NickolaiBeloguzov/manokit/releases) page.
 
-### Package overview {#sec-pack-overview}
+### Package overview
 
 Manokit consists of **2** modules: _manokit.email_ provides all the functionality needed to send emails fast and simple and _manokit.exceptions_ contains all custom exceptions that can be raised by this package in case something goes wrong.
 
@@ -46,7 +46,7 @@ Here's a each module's struncture
     -   _SMTPError_ - there sre some problems with SMTP connection. It may indicate faulty SMTP server, unsupported type of connection, etc.
     -   _EmailError_ - email cannot be sent. It is caused by missing metadata (subject, recepients, body, ...)
 
-### Simple Emails {#sec-simple-emails}
+### Simple Emails
 
 To send a very simple plain-text email you need to import _SimpleEmail_ class from _manokit.email_ module.
 
@@ -54,7 +54,7 @@ To initialize it, you need to pass 4 things: an SMTP server address, its port, y
 
 It looks like this (e.g. send an email via GMail):
 
-```
+```python
 from manokit.email import SimpleEmail
 
 op = SimpleEmail('smtp.gmail.com', 465, ('sender_email@gmail.com', 'TotallySecure1'), True)
@@ -66,7 +66,7 @@ Note that this class does not support email with HTML in any way and will raise 
 
 A bit of clarification. Near class' properties you can see two different specifiers: '(property)' means that you cannot change this property after instance creation; '(property + setter)' means that you can change this property's value by this expression:
 
-```
+```python
 op.property_name = <your_value>
 ```
 
@@ -94,7 +94,7 @@ Here's a complete list of class' methods and properties:
         File: str - path to file
         If HTML tags are detected in file's contents, an exception will be raised.
 
-#### SimpleEmail code examples {#simple-email-examples}
+#### SimpleEmail code examples
 
 Sendind a very basic email:
 
@@ -151,7 +151,7 @@ op.recepients = 'publisher@publish.org'
 op.send()
 ```
 
-### Emails with HTML {#sec-emails-with-html}
+### Emails with HTML
 
 To send fancy emails you'll need to use _HTMLEmail_ class from _manokit.email_ module.
 
@@ -191,7 +191,7 @@ Here's a complete list of class' methods and properties:
         File: str - path to file
         If no HTML tags are found, default styling is applied.
 
-#### HTMLEmail code examples {#sec-html-examples}
+#### HTMLEmail code examples
 
 Sendind a simple HTML email:
 
@@ -266,7 +266,7 @@ op.recepients = 'user184720@musicforlife.com'
 op.send()
 ```
 
-### Similarity is the key {#sec-similarity}
+### Similarity is key
 
 You might've noticed that _SimpleEmail_ and _HTMLEmail_ are very similar in terms of used methods and their general implication. This similarity exists because all these classes are based on top of one main _BaseEmail_ class that actually contains all the functionality.
 
