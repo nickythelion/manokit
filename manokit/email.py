@@ -123,6 +123,7 @@ class BaseEmail:
         self._server = None
         self._context = ssl.create_default_context()
         self._timestamp = datetime.datetime.now()
+        self._FILESIZE_LIMIT = 20971520
 
         # Email info
         self._body = None
@@ -202,6 +203,13 @@ class BaseEmail:
     @subject.setter
     def subject(self, value) -> None:
         self._subject = str(value)
+
+    @property
+    def filesize_limit(self) -> int:
+        """
+        Maximum filsize for an attachment
+        """
+        return self._FILESIZE_LIMIT
 
     @property
     def timestamp(self) -> str:
@@ -334,6 +342,15 @@ class BaseEmail:
                 # If file is empty, do not append it and skip current loop iteration
                 if os.stat(attachment).st_size == 0:
                     continue
+
+                # If attachment's size is more than 50Mb, raise an exception
+                if os.stat(attachment).st_size > self._FILESIZE_LIMIT:
+                    raise AttachmentError(
+                        "cannot attach '{file}' file: filesize is more than 20Mb ({curr_size:.2f} Mb)".format(
+                            file=attachment,
+                            curr_size=os.stat(attachment).st_size / (1024 * 1024.0),
+                        )
+                    )
 
                 # Read file and append it to Message
                 _a_file = open(attachment, "rb")
