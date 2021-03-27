@@ -225,7 +225,7 @@ from manokit.email import HTMLEmail
 op = HTMLEmail('smtp.gmail.com', 465, ('my_email@gmail.com', 'MyPasswd1'), True)
 
 # Setting all the necessary parameters
-op.subject = 'Quaterly Report'
+op.subject = 'Website patch (final)'
 op.body = """\
     <div id="files">
         Here are all my files I'm sending you:
@@ -279,7 +279,7 @@ from manokit.email import BaseEmail
 
 class BetterEmail(BaseEmail):
     def __init__(self, host, port, creds, ssl, **kwargs) -> None:
-        # do your own super coll stuff
+        # do your own super cool stuff
         super().__init__(host, port, creds, ssl)
 
     # Override superclass methods to be better
