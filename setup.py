@@ -14,6 +14,22 @@
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
 
 import setuptools
+import sys
+import os
+import shutil
+
+if "clean" is sys.argv:
+    print("Removing previous version...")
+    if os.path.exists("./build") and os.path.isdir("./build"):
+        print("Removing 'build' folder")
+        shutil.rmtree("./build")
+    if os.path.exists("./dist") and os.path.isdir("./dist"):
+        print("Removing 'dist' folder")
+        shutil.rmtree("./dist")
+    if os.path.exists("./manokit.egg-info") and os.path.isdir("./manokit.egg-info"):
+        print("Removing 'manokit.egg-info' folder")
+        shutil.rmtree("./manokit.egg-info")
+    sys.exit(0)
 
 with open("README.md", "r", encoding="UTF-8") as _f:
     long_desc = _f.read()
