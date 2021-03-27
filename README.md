@@ -9,13 +9,13 @@
     -   [HTMLEmail code examples](#htmlemail-code-examples)
 -   [Similarity is key](#similarity-is-key)
 
-### Introduction 
+### Introduction
 
 **Manokit** is an easy-to-use native email sender for Python. That's right! _There is no dependencies!_
 
 With just a few lines of code you will be able to send fancy emails with no headache in sight!
 
-### Installation 
+### Installation
 
 You can install this package directly from [PyPI](https://pypi.org/project/manokit) or using pip:
 
@@ -78,6 +78,8 @@ Here's a complete list of class' methods and properties:
         Email's subject line. By default it is None.
     -   **_timestamp (property)_**
         Email's time of birth, basically. It indicates exact time when class' instance was created and is used as email's time metadata
+    -   **_filesize_limit (property)_**
+        Maximum attachment's filesize. It is equal to 20 Mb because this is the most common limit. If file is larger, an _AttachmentError_ exception is raised. This limit cannot be disabled.
     -   **_body (property + setter)_**
         Email's body. By default it is None.
         _Note: if there are any HTML tags, a BodyError exception will be raised_
@@ -175,6 +177,8 @@ Here's a complete list of class' methods and properties:
         Email's subject line. By default it is None.
     -   **_timestamp (property)_**
         Email's time of birth, basically. It indicates exact time when class' instance was created and is used as email's time metadata
+    -   **_filesize_limit (property)_**
+        Maximum attachment's filesize. It is equal to 20 Mb because this is the most common limit. If file is larger, an _AttachmentError_ exception is raised. This limit cannot be disabled.
     -   **_body (property + setter)_**
         Email's body. By default it is None.
         _Note: if there are no HTML tags present in the body, default styling is applied. It changes font family to Verdana and text color to #262626_

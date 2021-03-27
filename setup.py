@@ -18,7 +18,7 @@ import sys
 import os
 import shutil
 
-if "clean" is sys.argv:
+if "clean" in sys.argv:
     print("Removing previous version...")
     if os.path.exists("./build") and os.path.isdir("./build"):
         print("Removing 'build' folder")
@@ -36,7 +36,7 @@ with open("README.md", "r", encoding="UTF-8") as _f:
 
 setuptools.setup(
     name="manokit",
-    version="1.0.0",
+    version="1.1.0",
     description="An easy-to-use, purely native email sender",
     long_description=long_desc,
     long_description_content_type="text/markdown",
