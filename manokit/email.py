@@ -410,7 +410,8 @@ class SimpleEmail(BaseEmail):
             raise BodyError("plain-text emails cannot contain HTML tags")
         self._body = value
 
-    def body_from_file(self, file: str) -> None:
+    @staticmethod
+    def body_from_file(file: str) -> str:
         # Check if path is valid
         if not isinstance(file, str):
             raise ParameterError(
@@ -439,7 +440,7 @@ class SimpleEmail(BaseEmail):
         if ManokitInternal.contains_html(body):
             raise BodyError("plain-text emails cannot contain HTML tags.")
 
-        self._body = body
+        return body
 
 
 class HTMLEmail(BaseEmail):
@@ -484,7 +485,8 @@ class HTMLEmail(BaseEmail):
             return
         self._body = value
 
-    def body_from_file(self, file: str) -> None:
+    @staticmethod
+    def body_from_file(file: str) -> str:
         """
         Read content from file and make it email's body
 
@@ -527,9 +529,8 @@ class HTMLEmail(BaseEmail):
         # If content does not contain any HTML, default styling is applied
         if not ManokitInternal.contains_html(body):
 
-            self._body = '<div style="font-family: Verdana; font-color: #262626">{body}</div>'.format(
+            return '<div style="font-family: Verdana; font-color: #262626">{body}</div>'.format(
                 body=body
             )
-            return
 
-        self._body = body
+        return body
