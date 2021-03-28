@@ -8,6 +8,7 @@
 -   [Emails with HTML](#emails-with-html)
     -   [HTMLEmail code examples](#htmlemail-code-examples)
 -   [Similarity is key](#similarity-is-key)
+-   [Changelog](https://github.com/NickolaiBeloguzov/manokit/blob/master/CHANGELOG.md)
 
 ### Introduction
 
@@ -302,3 +303,7 @@ That's great. This means that this project is alive.
 You can start by opening a [Pull Request](https://github.com/NickolaiBeloguzov/manokit/pulls) and describe your problem/suggestion/idea there.
 
 For now that's all! But not for long...
+
+### Changelog
+
+To see our changelog [click here](https://github.com/NickolaiBeloguzov/manokit/blob/master/CHANGELOG.md)
