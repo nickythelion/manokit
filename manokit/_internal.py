@@ -28,7 +28,9 @@ import re
 
 class ManokitInternal:
     @staticmethod
-    def format_path(path: Union[str, list[str], tuple[str], set[str]]) -> os.PathLike:
+    def format_path(
+        path: Union["str", "list[str]", "tuple[str]", "set[str]"]
+    ) -> os.PathLike:
         """
         Format string/a collection of strings into a pathlike string
 

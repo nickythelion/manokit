@@ -51,7 +51,7 @@ class BaseEmail:
         self,
         smtp_server: str,
         smtp_port: int,
-        credentials: tuple[str, str],
+        credentials: "tuple[str, str]",
         _ssl: bool = False,
     ) -> None:
         """
@@ -230,14 +230,14 @@ class BaseEmail:
         self._body = value
 
     @property
-    def recepients(self) -> list[str]:
+    def recepients(self) -> "list[str]":
         """
         List of recepients of current email
         """
         return self._recepients
 
     @recepients.setter
-    def recepients(self, value: Union[str, list[str]]) -> None:
+    def recepients(self, value: Union[str, "list[str]"]) -> None:
         if isinstance(value, str):
             self._recepients.clear()
             if not ManokitInternal.check_email_address(value):
@@ -258,14 +258,14 @@ class BaseEmail:
             self._recepients = value
 
     @property
-    def attachments(self) -> list[str]:
+    def attachments(self) -> "list[str]":
         """
         List of current email's attachments
         """
         return self._attachments
 
     @attachments.setter
-    def attachments(self, value: Union[str, list[str]]) -> None:
+    def attachments(self, value: Union[str, "list[str]"]) -> None:
         if isinstance(value, str):
             self._attachments.clear()
             self._attachments.append(os.path.abspath(str(value)))
@@ -380,7 +380,7 @@ class SimpleEmail(BaseEmail):
         self,
         smtp_server: str,
         smtp_port: int,
-        credentials: tuple[str, str],
+        credentials: "tuple[str, str]",
         _ssl: bool = False,
     ) -> None:
         """
@@ -451,7 +451,7 @@ class HTMLEmail(BaseEmail):
         self,
         smtp_server: str,
         smtp_port: int,
-        credentials: tuple[str, str],
+        credentials: "tuple[str, str]",
         _ssl: bool = False,
     ) -> None:
         """
