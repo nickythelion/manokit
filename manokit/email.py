@@ -424,12 +424,12 @@ class SimpleEmail(BaseEmail):
         # Check if file exists and is a file
         if not os.path.exists(file):
             raise BodyError(
-                "cannot read letter's body from {file} file: this file does not exist"
+                "cannot read letter's body from {file} file: this file does not exist".format(file=file)
             )
 
         if not os.path.isfile(file):
             raise BodyError(
-                "cannot read letter's body from {file} file: this is not a file"
+                "cannot read letter's body from {file} file: this is not a file".format(file=file)
             )
 
         path = ManokitInternal.format_path(file)
@@ -513,12 +513,12 @@ class HTMLEmail(BaseEmail):
         # Check if file exists and is a file
         if not os.path.exists(file):
             raise BodyError(
-                "cannot read letter's body from {file} file: this file does not exist"
+                "cannot read letter's body from {file} file: this file does not exist".format(file=file)
             )
 
         if not os.path.isfile(file):
             raise BodyError(
-                "cannot read letter's body from {file} file: this is not a file"
+                "cannot read letter's body from {file} file: this is not a file".format(file=file)
             )
 
         # Retrieve file content
