@@ -268,10 +268,10 @@ class BaseEmail:
     def attachments(self, value: Union[str, "list[str]"]) -> None:
         if isinstance(value, str):
             self._attachments.clear()
-            self._attachments.append(os.path.abspath(str(value)))
+            self._attachments.append(ManokitInternal.format_path(value))
 
         else:
-            self._attachments = [os.path.abspath(str(file)) for file in value]
+            self._attachments = [ManokitInternal.format_path(file) for file in value]
 
     @property
     def sender_email(self) -> str:

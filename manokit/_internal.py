@@ -21,7 +21,7 @@
 # IT WAS NOT INTENDED BY A DEVELOPER AND IS HIGHLY DISCOURAGED
 
 from manokit.exceptions import ParameterError, SMTPError
-import os
+from pathlib import Path
 from typing import Union
 import re
 
@@ -30,7 +30,7 @@ class ManokitInternal:
     @staticmethod
     def format_path(
         path: Union["str", "list[str]", "tuple[str]", "set[str]"]
-    ) -> os.PathLike:
+    ) -> Path:
         """
         Format string/a collection of strings into a pathlike string
 
@@ -57,10 +57,12 @@ class ManokitInternal:
 
         # If path is string, make it absolute and normalize it
         if isinstance(path, str):
-            return os.path.normpath(os.path.abspath(path))
+            # return R"{path}".format(path=os.path.normpath(os.path.abspath(path)))
+            return Path(path).absolute().as_posix()
 
         # If path is a collection of strings, join it together, make it absolute and normalize it
-        return os.path.normpath(os.path.abspath(os.path.join(*[str(i) for i in path])))
+        # return R"{path}".format(path=os.path.normpath(os.path.abspath(os.path.join(*[str(i) for i in path]))))
+        return Path(*path).absolute().as_posix()
 
     @staticmethod
     def check_email_address(email: str) -> bool:
