@@ -92,7 +92,7 @@ Here's a complete list of class' methods and properties:
         Sender's Email address.
     -   **_send() -> None (method)_**
         Sends an email. Simple as that. It takes all the parameters from properties specified above and does all the dirty work, like setting headers, behind the scenes.
-    -   **_body_from_file(file: str) -> None (method)_**
+    -   **_body_from_file(file: str) -> None (static method)_**
         Reads file's contents and uses it as email's body.
         File: str - path to file
         If HTML tags are detected in file's contents, an exception will be raised.
@@ -147,7 +147,7 @@ op = SimpleEmail('smtp.gmail.com', 465, ('my_email@gmail.com', 'MyPasswd1'), Tru
 
 # Setting all the necessary parameters
 op.subject = 'A Screenplay Draft'
-op.body_from_file('./screenplay/draft.txt')
+op.body = SimpleEmail.body_from_file('./screenplay/draft.txt')
 op.recepients = 'publisher@publish.org'
 
 # Sending email
@@ -191,7 +191,7 @@ Here's a complete list of class' methods and properties:
         Sender's Email address.
     -   **_send() -> None (method)_**
         Sends an email. Simple as that. It takes all the parameters from properties specified above and does all the dirty work, like setting headers, behind the scenes.
-    -   **_body_from_file(file: str) -> None (method)_**
+    -   **_body_from_file(file: str) -> None (static method)_**
         Reads file's contents and uses it as email's body.
         File: str - path to file
         If no HTML tags are found, default styling is applied.
@@ -264,7 +264,7 @@ op = HTMLEmail('smtp.gmail.com', 465, ('my_email@gmail.com', 'MyPasswd1'), True)
 
 # Setting all the necessary parameters
 op.subject = 'Your subscription has ended!'
-op.body_from_file('./email-templates/sub-end.html')
+op.body = HTMLEmail.body_from_file('./email-templates/sub-end.html')
 op.recepients = 'user184720@musicforlife.com'
 
 # Sending email
