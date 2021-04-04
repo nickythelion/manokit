@@ -20,7 +20,7 @@ jobs:
                   python-version: ${{ matrix.py-version }}
             - name: Install dependencies
               run: |
-                  python -m install --upgrade pip
+                  python -m pip sinstall --upgrade pip
                   pip install black setuptools wheel twine
                   if ([-f requirements.txt]); then pip install -r requirements.txt; fi
             - name: Lint code with black
