@@ -1,14 +1,14 @@
-name: Test Python code
+name: Publish package to PyPI
 
 on: [push]
 
-strategy:
-    matrix:
-        os: [windows-latest, linux-latest]
-        py-version: [3.8, 3.9]
-
 jobs:
     build:
+        strategy:
+            matrix:
+                os: [windows-latest, linux-latest]
+                py-version: [3.8, 3.9]
+
         runs-on: ${{ matrix.os }}
         steps:
             - uses: actions/checkout@v2
@@ -19,19 +19,7 @@ jobs:
             - name: Install dependencies
               run: |
                   python -m install --upgrade pip
-                  pip install black setuptools wheel twine
+                  pip install black
                   if [-f requirements.txt]; then pip install -r requirements.txt; fi
             - name: Lint code with black
               run: black . --line-length 88
-
-    publish:
-        runs-on: ${{ mnatrix.os }}
-        needs: [build]
-        steps:
-            - name: Building package
-              run: python setup.py bdist_wheel sdist
-            - name: Publishing to PyPI
-              run: twine upload dist/*
-              env:
-                  TWINE_USERNAME: ${{secrets.PYPI_LOGIN}}
-                  TWINE_PASSWORD: ${{secrets.PYPI_PASSWORD}}
