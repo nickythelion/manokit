@@ -18,22 +18,20 @@ jobs:
                   python-version: ${{ matrix.py-version }}
             - name: Install dependencies
               run: |
-              python -m install --upgrade pip
-              pip install black setuptools wheel twine
-              if [-f requirements.txt]; then pip install -r requirements.txt; fi
+                  python -m install --upgrade pip
+                  pip install black setuptools wheel twine
+                  if [-f requirements.txt]; then pip install -r requirements.txt; fi
             - name: Lint code with black
-              run: black . --line-length 88 
+              run: black . --line-length 88
 
     publish:
-      runs-on: ${{ mnatrix.os }}
-      needs: [build]
-      steps:
-        - name: Building package
-          run: python setup.py bdist_wheel sdist
-        - name: Publishing to PyPI
-          run: twine upload dist/*
-          env: 
-            TWINE_USERNAME: ${{secrets.PYPI_LOGIN}}
-            TWINE_PASSWORD: ${{secrets.PYPI_PASSWORD}}
-        
-
+        runs-on: ${{ mnatrix.os }}
+        needs: [build]
+        steps:
+            - name: Building package
+              run: python setup.py bdist_wheel sdist
+            - name: Publishing to PyPI
+              run: twine upload dist/*
+              env:
+                  TWINE_USERNAME: ${{secrets.PYPI_LOGIN}}
+                  TWINE_PASSWORD: ${{secrets.PYPI_PASSWORD}}
