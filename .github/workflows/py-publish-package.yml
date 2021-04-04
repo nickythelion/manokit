@@ -1,4 +1,4 @@
-name: Test Python code
+name: Publish package to PyPI
 
 on:
     release:
