@@ -1,4 +1,4 @@
-# Copyright (C) 2021  Nickolai Beloguzov
+# Copyright (C) 2023  Nikolai Beloguzov a/k/a nickythelion
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -26,7 +26,9 @@ if "clean" in sys.argv:
     if os.path.exists("./dist") and os.path.isdir("./dist"):
         print("Removing 'dist' folder")
         shutil.rmtree("./dist")
-    if os.path.exists("./manokit.egg-info") and os.path.isdir("./manokit.egg-info"):
+    if os.path.exists("./manokit.egg-info") and os.path.isdir(
+        "./manokit.egg-info"
+    ):
         print("Removing 'manokit.egg-info' folder")
         shutil.rmtree("./manokit.egg-info")
     sys.exit(0)
@@ -40,9 +42,9 @@ setuptools.setup(
     description="An easy-to-use, purely native email sender",
     long_description=long_desc,
     long_description_content_type="text/markdown",
-    author="Nickolai Beloguzov",
-    author_email="nickolai.beloguzov@gmail.com",
-    url="https://github.com/NickolaiBeloguzov/manokit",
+    author="Nikolai Beloguzov",
+    author_email="nickythelionfurry@gmail.com",
+    url="https://github.com/nickythelion/manokit",
     packages=["manokit"],
     classifiers=[
         "Development Status :: 5 - Production/Stable",
@@ -59,7 +61,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
-        "Topic :: Communications",
+        "Programming Language :: Python :: 3.11" "Topic :: Communications",
         "Topic :: Communications :: Email",
         "Topic :: Internet",
         "Topic :: Software Development",
