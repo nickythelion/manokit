@@ -308,3 +308,4 @@ class Email:
             list(self.rec | self.cc | self.bcc),
             message.as_string(),
         )
+        return self
