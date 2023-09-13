@@ -270,11 +270,14 @@ class Email:
 
         return self
 
-    def send(self) -> None:
-        """Sends an email. This method is considered a logical endpoint, thus it does not support method chaining
+    def send(self) -> Self:
+        """Sends an email.
 
         Raises:
             EmailError: if the recipient list is empty
+
+        Returns:
+            Self: Returns a modified instance for method chaining
         """
         if len(self.rec) < 1:
             raise EmailError(
