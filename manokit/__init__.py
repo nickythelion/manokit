@@ -135,6 +135,10 @@ class Email:
 
         return self
 
+    def logout(self) -> None:
+        """Closes the SMTP session"""
+        self.email_handler.quit()
+
     def add_recipient(self, address: str) -> Self:
         """Adds a recipient that will receive an email. This will have no effect if the address is already in CC or BCC lists
 
