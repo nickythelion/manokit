@@ -41,51 +41,6 @@ class AttachmentError(Exception):
         return super().__str__()
 
 
-class BodyError(Exception):
-    def __init__(self, *args: object) -> None:
-        """
-        An email's body is not valid
-        """
-        super().__init__(*args)
-
-    def __str__(self) -> str:
-        return super().__str__()
-
-
-class ParameterError(Exception):
-    def __init__(self, *args: object) -> None:
-        """
-        One or more function's parameters is invalid
-        """
-        super().__init__(*args)
-
-    def __str__(self) -> str:
-        return super().__str__()
-
-
-class AuthError(Exception):
-    def __init__(self, *args: object) -> None:
-        """
-        There's an error during authentication
-        """
-        super().__init__(*args)
-
-    def __str__(self) -> str:
-        return super().__str__()
-
-
-class SMTPError(Exception):
-    def __init__(self, *args: object) -> None:
-        """
-        There's an error with SMTP Server
-        """
-
-        super().__init__(*args)
-
-    def __str__(self) -> str:
-        return super().__str__()
-
-
 class EmailError(Exception):
     def __init__(self, *args: object) -> None:
         """
