@@ -97,6 +97,22 @@ email.login(
 ```
 Manokit does not support unencrypted communication over SMTP port 25.
 
+After you have finished with Manokit, you need to call `logout()` function to close the SMTP session.
+```python
+from manokit import Email
+
+email = Email("smtp.gmail.com", 465)
+email.login(
+    username="manokit@gmail.com", 
+    password="manokit_is_cool", 
+    use_starttls=False,
+)
+
+# Your email stuff
+
+email.logout()
+```
+
 #### Adding recipients
 To add an email address to the list of recipients, simply call the appropriate function:
 ```python
@@ -105,6 +121,8 @@ from manokit import Email
 email = Email("smtp.gmail.com", 587)
 email.login(username="manokit@gmail.com", password="manokit_is_cool")
 email.add_recipient("buddy@examplecorp.com")
+
+email.logout()
 ```
 For now, you can add recipients one at a time, so for each one you need to call the `add_recipient` function separately.
 
@@ -116,6 +134,8 @@ email = Email("smtp.gmail.com", 587)
 email.login(username="manokit@gmail.com", password="manokit_is_cool")
 email.add_recipient("boss@examplecorp.com") # This is important
 email.add_cc("buddy@examplecorp.com")
+
+email.logout()
 ```
 However, make sure to add at least one recipient, or else the email will not be sent.
 
@@ -127,6 +147,8 @@ email = Email("smtp.gmail.com", 587)
 email.login(username="manokit@gmail.com", password="manokit_is_cool")
 email.add_recipient("boss@examplecorp.com")
 email.add_bcc("spy@rivalcorp.com")
+
+email.logout()
 ```
 It is important to know that if you try to add an email address to either recipients, CC, or BCC when it already is added to one of them, **these function will have no effect**.
 ```python
@@ -139,6 +161,8 @@ email.add_cc("buddy@examplecorp.com")
 
 print(len(email.rec)) # Output: 1
 print(len(email.cc)) # Output: 0
+
+email.logout()
 ```
 #### Composing an email
 A simple email consists of a subject and a body. Both of these things are set by Manokit's `set_subject` and `set_body` functions, respectively.
@@ -151,6 +175,8 @@ email.add_recipient("buddy@examplecorp.com")
 
 email.set_subject("Manokit is kinda cool!")
 email.set_body("Hey, you heard about that library called Manokit? I tried it and it is nice ngl. Give it a try!")
+
+email.logout()
 
 ```
 The use of these functions is not compulsory, however. Manokit defaults the subject and the body to `<no subject>` and `<no body>`, respectively.
@@ -166,6 +192,8 @@ email = Email("smtp.gmail.com", 587)
 email.login(username="manokit@gmail.com", password="manokit_is_cool")
 email.add_recipient("boss@examplecorp.com")
 email.add_attachment("./reports/quarterly_q3_q4.pdf")
+
+email.logout()
 ```
 Just as with `add_recipient`, `add_bcc` and `add_cc`, the `add_attachment` function adds one file at a time.
 
@@ -179,6 +207,8 @@ email.add_recipient("boss@examplecorp.com")
 email.add_attachment("./reports/empty_report.pdf")
 
 print(len(email.attachments)) # Output: 0
+
+email.logout()
 ```
 #### Attachment size limit
 By default, Manokit limits the combined size of the attachments to 25 MB (can be adjusted during the [Initialization](#initialization)).
@@ -193,6 +223,8 @@ email.add_recipient("boss@examplecorp.com")
 email.add_attachment("./reports/40kb_report.txt")
 
 print(email.available_filesize) # Output: 60
+
+email.logout()
 ```
 If the attachment's size exceeds the limit, an [`AttachmentError`](#attachmenterror) will be raised.
 
@@ -207,8 +239,10 @@ email.add_recipient("buddy@examplecorp.com")
 email.add_cc("buddy@examplecorp.com")
 
 email.send()
+
+email.logout()
 ```
-This function can raise an [`EmailError`](#emailerror) if no recipients are defined.
+This function can raise an [`EmailError`](#emailerror) if no recipients are defined or there was a problem while sending an email.
 
 #### Method chaining
 Manokit's functions support method chaining
@@ -222,8 +256,9 @@ email.login(
     ).add_recipient("buddy@examplecorp.com")
     .add_cc("buddy@examplecorp.com")
     .send()
+    .logout()
 ```
-The `send()` function, however, is considered a logical endpoint, and thus does not support method chaining. In other words, the `send()` function must be the last to be called.
+The `logout()` function, however, is considered a logical endpoint, and thus does not support method chaining. In other words, the `logout()` function must be the last to be called.
 
 ### Exceptions
 
@@ -237,7 +272,7 @@ Functions that can raise it:
 - `add_bcc()`
 
 #### EmailError
-This exception is raised when there is a problem with the email itself. For now this exception is only raised by the `send()` function if there is no recipients
+This exception is raised when there is a problem with the email itself. For now this exception is only raised by the `send()` function if there is no recipients or if there was a problem with sending an email
 
 #### AttachmentError
 This exception is raised when there is a problem with email's attachments. for now this exception is only raised by the `add_attachment()` function if the path provided does not point to a file or the attachment's size is larger that the available space.
