@@ -1,4 +1,4 @@
-# Copyright (C) 2021  Nickolai Beloguzov
+# Copyright (C) 2023  Nikolai Beloguzov a/k/a nickythelion
 
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -12,11 +12,6 @@
 
 # You should have received a copy of the GNU General Public License
 # along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-
-# manokit.exceptions module
-#
-# Provides custom exceptions for manokit package
 
 
 class NotAValidEmailAddressError(Exception):
