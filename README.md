@@ -1,309 +1,247 @@
-### Table of contents
+# Manokit
 
--   [Introduction](#introduction)
--   [Installation](#installation)
--   [Package overview](#package-overview)
--   [Simple Emails](#simple-emails)
-    -   [SimpleEmail code examples](#simpleemail-code-examples)
--   [Emails with HTML](#emails-with-html)
-    -   [HTMLEmail code examples](#htmlemail-code-examples)
--   [Similarity is key](#similarity-is-key)
--   [Changelog](https://github.com/NickolaiBeloguzov/manokit/blob/master/CHANGELOG.md)
+## Table of contents
+- [General Information](#general-information)
+- [Installation](#installation)
+- [v1 vs. v2](#v1-vs-v2)
+- [Structure](#structure)
+    - [Email class](#email-class)
+        - [Initialization](#initialization)
+        - [Authentication](#authentication)
+        - [Adding recipients](#adding-recipients)
+        - [Composing an email](#composing-an-email)
+        - [Adding attachments](#adding-attachments)
+        - [Attachment size limit](#attachment-size-limit)
+        - [Sending an email](#sending-an-email)
+        - [Method chaining](#method-chaining)
+    - [Exceptions](#exceptions)
+        - [NotAValidEmailAddressError](#notavalidemailaddresserror)
+        - [EmailError](#emailerror)
+        - [AttachmentError](#attachmenterror)
+- [Changelog](#changelog)
 
-### Introduction
+## General information
+Manokit is a simple, fully native library for sending emails. It provides an easy-to-use API for creating and sending emails, as well as offers a very customizable structure.
 
-**Manokit** is an easy-to-use native email sender for Python. That's right! _There is no dependencies!_
+Manokit provides 2 modules: the base module name `manokit`, where the `Email` base class is defined, and a module called `manokit.exceptions` where custom exceptions, used by manokit, are defined.
 
-With just a few lines of code you will be able to send fancy emails with no headache in sight!
-
-### Installation
-
-You can install this package directly from [PyPI](https://pypi.org/project/manokit) or using pip:
-
+## Installation
+Manokit can be installed from the [PyPI](https://pypi.org/project/manokit) using the following command:
 ```
 pip install manokit
 ```
+You can also download the package from the [releases](https://github.com/nickythelion/manokit/releases) section, or assemble it from source.
 
-Also you can download installation-ready archives and project's source code from the [Releases](https://github.com/NickolaiBeloguzov/manokit/releases) page.
+## V1 vs. V2
+Manokit has reached a point of version separation. Manokit v2's API has been overhauled to provide a more consistent and predictable experience.
 
-### Package overview
+These changes include:
+- All functionality has been moved to a single class, instead of being scattered across 3 classes.
+- Explicit type checking was removed
+- Complete overhaul of properties and their behaviours
 
-Manokit consists of **2** modules: _manokit.email_ provides all the functionality needed to send emails fast and simple and _manokit.exceptions_ contains all custom exceptions that can be raised by this package in case something goes wrong.
+See additional info in our [Changelog](https://github.com/nickythelion/manokit/blob/master/CHANGELOG.md).
 
-Here's a each module's struncture
+All these changes and updates are aimed at bringing a more pleasant experience to the end user, but they break compatibility. If you are currently using manokit and want to upgrade, make sure to update your codebase accordingly.
 
--   **_*manokit.email*_ module**:
+## Structure
 
-    -   _SimpleEmail_ class for sending plain-text emails
-    -   _HTMLEmail_ class for sending emails containing HTML
-    -   _BaseEmail_ class for development and expansion purposes
+This section describes the parts of Manokit, and how to use them.
 
--   **_manokit.exceptions_ module**:
-    -   _NotAValidEmailAddressError_ - sender's or recepient's email address is not valid (it may be a typo, missing domain, etc)
-    -   _AttachmentError_ - there's an error with email's attachment file. It may point that file does not exist, is not a file or cannot be accessed.
-    -   _BodyError_ - there's a problem with email's body. It may contain 'bad' characters, etc.
-    -   _ParameterError_ - one or more of function's parameters are invalid. They can be of wrong type, have 'bad' values, etc
-    -   _AuthError_ - there's a problem during authentication. It may indicate bad credentials or that mail server is restricting connections from an unverified source (like GMail does)
-    -   _SMTPError_ - there sre some problems with SMTP connection. It may indicate faulty SMTP server, unsupported type of connection, etc.
-    -   _EmailError_ - email cannot be sent. It is caused by missing metadata (subject, recepients, body, ...)
+### Email class
+The `Email` class is where all the functionality resides.
 
-### Simple Emails
-
-To send a very simple plain-text email you need to import _SimpleEmail_ class from _manokit.email_ module.
-
-To initialize it, you need to pass 4 things: an SMTP server address, its port, your credentials and enable SSL (optional).
-
-It looks like this (e.g. send an email via GMail):
-
+#### Initialization
+To begin working with Manokit, simply import the `Email` class and create an instance.
 ```python
-from manokit.email import SimpleEmail
+from manokit import Email
 
-op = SimpleEmail('smtp.gmail.com', 465, ('sender_email@gmail.com', 'TotallySecure1'), True)
+email = Email(smtp_host="smtp.gmail.com", smtp_port=587)
 ```
-
-It'll automatically authenticate you.
-
-Note that this class does not support email with HTML in any way and will raise an exception if it detects it. The reason is that _HTMLEmail_ class is designed to work with HTML and therefore is more optimized. Simply put, _SimpleEmail_ is just not designed for HTML.
-
-A bit of clarification. Near class' properties you can see two different specifiers: '(property)' means that you cannot change this property after instance creation; '(property + setter)' means that you can change this property's value by this expression:
-
+During initialization you can also adjust the attachment size limit (see [attachment size limit](#attachment-size-limit) for details), by specifying the new limit in bytes, like this:
 ```python
-op.property_name = <your_value>
+from manokit import Email
+
+small_email = Email("smtp.gmail.com", 587, filesize_limit=100)
 ```
+In the example above we have reduced the attachment size limit from 25 MB to 100 bytes. 
 
-Here's a complete list of class' methods and properties:
-
--   **SimpleEmail**
-
-    -   **_subject (property + setter)_**
-        Email's subject line. By default it is None.
-    -   **_timestamp (property)_**
-        Email's time of birth, basically. It indicates exact time when class' instance was created and is used as email's time metadata
-    -   **_filesize_limit (property)_**
-        Maximum attachment's filesize. It is equal to 20 Mb because this is the most common limit. If file is larger, an _AttachmentError_ exception is raised. This limit cannot be disabled.
-    -   **_body (property + setter)_**
-        Email's body. By default it is None.
-        _Note: if there are any HTML tags, a BodyError exception will be raised_
-    -   **_recepients (property + setter)_**
-        Addressed who will receive this email. This can take form of a single string or a list of strings. All emails are checked for validity and a _NotAValidEmailAddressError_ exception is raised if one of emails is not valid.
-    -   **_attachments (property + setter)_**
-        Email's attachments. You can specify an unlimited number of files to attach in form of a list of their path. They can be relative because manokit automatically converts them to absolute.
-    -   **_sender_email (property)_**
-        Sender's Email address.
-    -   **_send() -> None (method)_**
-        Sends an email. Simple as that. It takes all the parameters from properties specified above and does all the dirty work, like setting headers, behind the scenes.
-    -   **_body_from_file(file: str) -> None (static method)_**
-        Reads file's contents and uses it as email's body.
-        File: str - path to file
-        If HTML tags are detected in file's contents, an exception will be raised.
-
-#### SimpleEmail code examples
-
-Sendind a very basic email:
-
+#### Authentication
+In order to send an email, the client must first authenticate themselves with their SMTP server. Using Manokit, the authentication process looks like this:
 ```python
-from manokit.email import SimpleEmail
+from manokit import Email
 
-# Initializing
-op = SimpleEmail('smtp.gmail.com', 465, ('my_email@gmail.com', 'MyPasswd1'), True)
-
-# Setting all the important parts
-# By the way, you can change any of these parameters at any time
-op.subject = 'A very basic email with Manokit'
-op.body = "This is a very basic letter sent to you via Manokit"
-op.recepients = ['your_coworker@gmail.com', 'your_pm@hotmail.com']
-
-# Sending email
-op.send()
+email = Email("smtp.gmail.com", 587)
+email.login(username="manokit@gmail.com", password="manokit_is_cool")
 ```
+> This example passes the credentials as plain text for the sake of illustration.
+> **Please use environment variables/other secure ways of storing credentials when logging in!**
 
-Sending a basic email with attachments:
-
+As of May 30, 2022, Google introduced [some changes to their API](https://support.google.com/accounts/answer/6010255) that now require users to have an App Password. Manokit supports logging in with your App Password. Just pass your App Password instead of your regular password, like this:
 ```python
-from manokit.email import SimpleEmail
+from manokit import Email
 
-# Initializing
-op = SimpleEmail('smtp.gmail.com', 465, ('my_email@gmail.com', 'MyPasswd1'), True)
-
-# Setting all the necessary parameters
-op.subject = 'Quaterly Report'
-op.body = "Here's the quaterly report for Q1 2021. Sending in PDF and DOCX formats"
-op.recepients = 'cfo@bigcorp.com'
-
-# Adding attachments
-op.attachments = ['./report.pdf', './report.docx']
-
-# Sending email
-op.send()
+email = Email("smtp.gmail.com", 587)
+email.login(username="manokit@gmail.com", password="ccfv jels tttm hshe")
 ```
-
-Reading email's body from file
-
+By default, Manokit uses STARTTLS to encrypt the communication and make it more secure. If you would like to use SSL instead, simply disable STARTTLS during authentication and updating the port.
 ```python
-from manokit.email import SimpleEmail
+from manokit import Email
 
-# Initializing
-op = SimpleEmail('smtp.gmail.com', 465, ('my_email@gmail.com', 'MyPasswd1'), True)
-
-# Setting all the necessary parameters
-op.subject = 'A Screenplay Draft'
-op.body = SimpleEmail.body_from_file('./screenplay/draft.txt')
-op.recepients = 'publisher@publish.org'
-
-# Sending email
-op.send()
+email = Email("smtp.gmail.com", 465)
+email.login(
+    username="manokit@gmail.com", 
+    password="manokit_is_cool", 
+    use_starttls=False,
+)
 ```
+Manokit does not support unencrypted communication over SMTP port 25.
 
-### Emails with HTML
-
-To send fancy emails you'll need to use _HTMLEmail_ class from _manokit.email_ module.
-
-This class lets you use HTML and inline styling to make boring text very engaging.
-
-To initialize it, you need to pass 4 things: an SMTP server address, its port, your credentials and enable SSL (optional).
-
-It is very similar to _SimpleEmail_.
-
-```
-from manokit.email import HTMLEmail
-
-op = HTMLEmail('smtp.gmail.com', 465, ('sender_email@gmail.com', 'TotallySecure1'), True)
-```
-
-Here's a complete list of class' methods and properties:
-
--   **HTMLEmail**
-
-    -   **_subject (property + setter)_**
-        Email's subject line. By default it is None.
-    -   **_timestamp (property)_**
-        Email's time of birth, basically. It indicates exact time when class' instance was created and is used as email's time metadata
-    -   **_filesize_limit (property)_**
-        Maximum attachment's filesize. It is equal to 20 Mb because this is the most common limit. If file is larger, an _AttachmentError_ exception is raised. This limit cannot be disabled.
-    -   **_body (property + setter)_**
-        Email's body. By default it is None.
-        _Note: if there are no HTML tags present in the body, default styling is applied. It changes font family to Verdana and text color to #262626_
-    -   **_recepients (property + setter)_**
-        Addressed who will receive this email. This can take form of a single string or a list of strings. All emails are checked for validity and a _NotAValidEmailAddressError_ exception is raised if one of emails is not valid.
-    -   **_attachments (property + setter)_**
-        Email's attachments. You can specify an unlimited number of files to attach in form of a list of their path. They can be relative because manokit automatically converts them to absolute.
-    -   **_sender_email (property)_**
-        Sender's Email address.
-    -   **_send() -> None (method)_**
-        Sends an email. Simple as that. It takes all the parameters from properties specified above and does all the dirty work, like setting headers, behind the scenes.
-    -   **_body_from_file(file: str) -> None (static method)_**
-        Reads file's contents and uses it as email's body.
-        File: str - path to file
-        If no HTML tags are found, default styling is applied.
-
-#### HTMLEmail code examples
-
-Sendind a simple HTML email:
-
+#### Adding recipients
+To add an email address to the list of recipients, simply call the appropriate function:
 ```python
-from manokit.email import HTMLEmail
+from manokit import Email
 
-# Initializing
-op = HTMLEmail('smtp.gmail.com', 465, ('my_email@gmail.com', 'MyPasswd1'), True)
-
-# Setting all the important parts
-op.subject = 'A HTML Email with Manokit'
-# HTML can be partial (without <html> and <body> tags)
-op.body = """\
-    <div>
-        <span style="color: pink;">Here you can put basically anything</span>
-    </div>
-    <a href='https://github.com/NickolaiBeloguzov/manokit'>Manokit is awesome</a>
-"""
-op.recepients = ['mom@gmail.com', 'dad@hotmail.com']
-
-# Sending email
-op.send()
+email = Email("smtp.gmail.com", 587)
+email.login(username="manokit@gmail.com", password="manokit_is_cool")
+email.add_recipient("buddy@examplecorp.com")
 ```
+For now, you can add recipients one at a time, so for each one you need to call the `add_recipient` function separately.
 
-Sending a HTML email with attachments:
-
+If you want to CC a person instead, replace the `add_recipient` function with `add_cc`:
 ```python
-from manokit.email import HTMLEmail
+from manokit import Email
 
-# Initializing
-op = HTMLEmail('smtp.gmail.com', 465, ('my_email@gmail.com', 'MyPasswd1'), True)
-
-# Setting all the necessary parameters
-op.subject = 'Website patch (final)'
-op.body = """\
-    <div id="files">
-        Here are all my files I'm sending you:
-        <ul>
-            <li>template.html - A site template</li>
-            <li>template.css - Styles for the template</li>
-            <li>main.js - Main template script</li>
-        </ul>
-
-        <span style="color: red; font-weight: bold;">
-            These files must be in the same folder
-        </span>
-    </div>
-    """
-op.recepients = 'cfo@bigcorp.com'
-
-# Adding attachments
-op.attachments = ['./site/template.html', './site/template.css', './site/main.js']
-
-# Sending email
-op.send()
+email = Email("smtp.gmail.com", 587)
+email.login(username="manokit@gmail.com", password="manokit_is_cool")
+email.add_recipient("boss@examplecorp.com") # This is important
+email.add_cc("buddy@examplecorp.com")
 ```
+However, make sure to add at least one recipient, or else the email will not be sent.
 
-Reading email's body from file
-
+Same thing for BCC:
 ```python
-from manokit.email import HTMLEmail
+from manokit import Email
 
-# Initializing
-op = HTMLEmail('smtp.gmail.com', 465, ('my_email@gmail.com', 'MyPasswd1'), True)
-
-# Setting all the necessary parameters
-op.subject = 'Your subscription has ended!'
-op.body = HTMLEmail.body_from_file('./email-templates/sub-end.html')
-op.recepients = 'user184720@musicforlife.com'
-
-# Sending email
-op.send()
+email = Email("smtp.gmail.com", 587)
+email.login(username="manokit@gmail.com", password="manokit_is_cool")
+email.add_recipient("boss@examplecorp.com")
+email.add_bcc("spy@rivalcorp.com")
 ```
-
-### Similarity is key
-
-You might've noticed that _SimpleEmail_ and _HTMLEmail_ are very similar in terms of used methods and their general implication. This similarity exists because all these classes are based on top of one main _BaseEmail_ class that actually contains all the functionality.
-
-That opens up new doors for **YOU!** Yes! With Manokit you can build your own better email sending libraries. Simply inherit the _BaseEmail_ class and go beyond anyone's expectations
-
-Here's how it works:
-
+It is important to know that if you try to add an email address to either recipients, CC, or BCC when it already is added to one of them, **these function will have no effect**.
 ```python
-from manokit.email import BaseEmail
+from manokit import Email
 
-class BetterEmail(BaseEmail):
-    def __init__(self, host, port, creds, ssl, **kwargs) -> None:
-        # do your own super cool stuff
-        super().__init__(host, port, creds, ssl)
+email = Email("smtp.gmail.com", 587)
+email.login(username="manokit@gmail.com", password="manokit_is_cool")
+email.add_recipient("buddy@examplecorp.com")
+email.add_cc("buddy@examplecorp.com")
 
-    # Override superclass methods to be better
-    def send() -> None:
-        print('Sending emails to {recs}..'.format(recs=', '.join(self._recepients))
-
-        # Even more super cool stuff
-
-        super().send()
+print(len(email.rec)) # Output: 1
+print(len(email.cc)) # Output: 0
 ```
+#### Composing an email
+A simple email consists of a subject and a body. Both of these things are set by Manokit's `set_subject` and `set_body` functions, respectively.
+```python
+from manokit import Email
 
-### Got questions or ideas?
+email = Email("smtp.gmail.com", 587)
+email.login(username="manokit@gmail.com", password="manokit_is_cool")
+email.add_recipient("buddy@examplecorp.com")
 
-That's great. This means that this project is alive.
+email.set_subject("Manokit is kinda cool!")
+email.set_body("Hey, you heard about that library called Manokit? I tried it and it is nice ngl. Give it a try!")
 
-You can start by opening a [Pull Request](https://github.com/NickolaiBeloguzov/manokit/pulls) and describe your problem/suggestion/idea there.
+```
+The use of these functions is not compulsory, however. Manokit defaults the subject and the body to `<no subject>` and `<no body>`, respectively.
 
-For now that's all! But not for long...
+Manokit encodes the body of an email as `text/html`, rather than `text/plain`. This allows you to use HTML markup for styling and emphasis.
 
-### Changelog
+#### Adding attachments
+Sometimes we need to send an email with a file attached to it. To attach the file to your email, simply call the `add_attachment` function and provide a path to the file.
+```python
+from manokit import Email
 
-To see our changelog [click here](https://github.com/NickolaiBeloguzov/manokit/blob/master/CHANGELOG.md)
+email = Email("smtp.gmail.com", 587)
+email.login(username="manokit@gmail.com", password="manokit_is_cool")
+email.add_recipient("boss@examplecorp.com")
+email.add_attachment("./reports/quarterly_q3_q4.pdf")
+```
+Just as with `add_recipient`, `add_bcc` and `add_cc`, the `add_attachment` function adds one file at a time.
+
+If an attachment has already been added, or if the size of the file being attach is 0, the function will have no effect.
+```python
+from manokit import Email
+
+email = Email("smtp.gmail.com", 587)
+email.login(username="manokit@gmail.com", password="manokit_is_cool")
+email.add_recipient("boss@examplecorp.com")
+email.add_attachment("./reports/empty_report.pdf")
+
+print(len(email.attachments)) # Output: 0
+```
+#### Attachment size limit
+By default, Manokit limits the combined size of the attachments to 25 MB (can be adjusted during the [Initialization](#initialization)).
+
+Manokit also maintains an internal counter of how much space is available for future attachments.
+```python
+from manokit import Email
+
+email = Email("smtp.gmail.com", 587, filesize_limit=100)
+email.login(username="manokit@gmail.com", password="manokit_is_cool")
+email.add_recipient("boss@examplecorp.com")
+email.add_attachment("./reports/40kb_report.txt")
+
+print(email.available_filesize) # Output: 60
+```
+If the attachment's size exceeds the limit, an [`AttachmentError`](#attachmenterror) will be raised.
+
+#### Sending an email
+To send an email, just call `send()`
+```python
+from manokit import Email
+
+email = Email("smtp.gmail.com", 587)
+email.login(username="manokit@gmail.com", password="manokit_is_cool")
+email.add_recipient("buddy@examplecorp.com")
+email.add_cc("buddy@examplecorp.com")
+
+email.send()
+```
+This function can raise an [`EmailError`](#emailerror) if no recipients are defined.
+
+#### Method chaining
+Manokit's functions support method chaining
+```python
+from manokit import Email
+
+email = Email("smtp.gmail.com", 587)
+email.login(
+    username="manokit@gmail.com", 
+    password="manokit_is_cool",
+    ).add_recipient("buddy@examplecorp.com")
+    .add_cc("buddy@examplecorp.com")
+    .send()
+```
+The `send()` function, however, is considered a logical endpoint, and thus does not support method chaining. In other words, the `send()` function must be the last to be called.
+
+### Exceptions
+
+#### NotAValidEmailAddressError
+This exception is raised when the email address fails validation.
+
+Functions that can raise it:
+- `login()`
+- `add_recipient()`
+- `add_cc()`
+- `add_bcc()`
+
+#### EmailError
+This exception is raised when there is a problem with the email itself. For now this exception is only raised by the `send()` function if there is no recipients
+
+#### AttachmentError
+This exception is raised when there is a problem with email's attachments. for now this exception is only raised by the `add_attachment()` function if the path provided does not point to a file or the attachment's size is larger that the available space.
+
+## Changelog
+
+See the full changelog [here](https://github.com/nickythelion/manokit/blob/master/CHANGELOG.md).
