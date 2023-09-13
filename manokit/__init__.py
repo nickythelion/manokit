@@ -303,9 +303,15 @@ class Email:
 
             message.attach(part)
 
-        self.email_handler.sendmail(
+        errs = self.email_handler.sendmail(
             self.author,
             list(self.rec | self.cc | self.bcc),
             message.as_string(),
         )
+
+        if errs:
+            raise EmailError(
+                f"message to {errs.keys()[0]} failed (code {errs.get(errs.keys()[0])[0]}): {errs.get(errs.keys()[0])[1]}"
+            )
+
         return self
