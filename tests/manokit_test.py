@@ -1,6 +1,7 @@
 from pathlib import Path
 import shutil
 import tempfile
+from typing import Callable
 import unittest
 
 from manokit import Email
@@ -80,3 +81,18 @@ class ManokitTestCase(unittest.TestCase):
 
         self.email.add_bcc(addr)
         assert len(self.email.bcc) == 0
+
+    def test_set_custom_email_validator(self):
+        validator: Callable[[str], bool] = lambda addr: addr.endswith(
+            "@examplecorp.com"
+        )
+        self.email.set_custom_email_validator(validator=validator)
+
+        assert (
+            self.email._check_if_valid_email_address("boss@examplecorp.com")
+            == True
+        )
+        assert (
+            self.email._check_if_valid_email_address("spy@rivalcorp.com")
+            == False
+        )
