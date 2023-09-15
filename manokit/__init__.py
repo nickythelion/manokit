@@ -16,7 +16,7 @@
 from email.mime.base import MIMEBase
 from pathlib import Path
 import re
-from typing import Any, Self, Set
+from typing import Any, Callable, Self, Set
 import ssl
 from manokit.exceptions import (
     AttachmentError,
@@ -58,7 +58,20 @@ class Email:
 
     # Maybe we can add an ability for the end user to use custom validators?
     def _check_if_valid_email_address(self, address: str) -> bool:
-        """Checks whether an email address is valid
+        """Checks whether an email address is valid by calling a validator function.
+
+        Args:
+            address (str): an email address
+
+        Returns:
+            bool: True if the email address is valid, False otherwise
+        """
+        return self.email_validator(address)
+
+    def _default_email_validator(self, address: str) -> bool:
+        """Checks whether an email address is valid. This validator can be overridden by the user.
+
+        By default, Manokit uses a regular expression (this one: '^[-_+.\d\w]+@[-_+\d\w]+(?:\.{1}[\w]+)+$') to verify an email.
 
         Args:
             address (str): an email address
@@ -102,6 +115,7 @@ class Email:
 
         self.FILESIZE_LIMIT = filesize_limit
         self.available_filesize = filesize_limit
+        self.email_validator = self._default_email_validator
 
         # Maybe move it to send() function because it is used only there
         self.timestamp = datetime.datetime.now()
@@ -245,6 +259,16 @@ class Email:
         self.subject = subject
 
         return self
+
+    def set_custom_email_validator(
+        self, validator: "Callable[[str], bool]"
+    ) -> None:
+        """Changes an email validator to the one defined by the user. This is useful in case the user finds default validation insufficient, or the validation needs to be set programmatically
+
+        Args:
+            validator (Callable[[str], bool]): A function that takes a single parameter of type 'str' and returns a boolean
+        """
+        self.email_validator = validator
 
     def add_attachment(self, path: str) -> Self:
         """Adds an attachments to an email. This has no effect if an attachment already has been added or the file has a size of 0 bytes
