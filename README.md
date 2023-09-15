@@ -10,6 +10,7 @@
         - [Authentication](#authentication)
         - [Adding recipients](#adding-recipients)
         - [Composing an email](#composing-an-email)
+        - [Custom Email Validation](#custom-email-validation)
         - [Adding attachments](#adding-attachments)
         - [Attachment size limit](#attachment-size-limit)
         - [Sending an email](#sending-an-email)
@@ -182,6 +183,28 @@ email.logout()
 The use of these functions is not compulsory, however. Manokit defaults the subject and the body to `<no subject>` and `<no body>`, respectively.
 
 Manokit encodes the body of an email as `text/html`, rather than `text/plain`. This allows you to use HTML markup for styling and emphasis.
+
+#### Custom Email Validation
+By default, Manokit will validate user emails in certain cases (e.g. adding recipients, logging in, adding addresses to CC and BCC, etc) using a general-purpose regular expression.
+
+Specifically, the regular expression used is this one: ```^[-_+.\d\w]+@[-_+\d\w]+(?:\.{1}[\w]+)+$```
+
+However, if you find this validation mechanism unsuitable for their needs, like if you need to limit the domain that can be used, you can easily override it by providing your own validation logic.
+
+The validator must be callable that accepts a single parameter of type `str` and returns a value of type `bool`. Validator type: ```Callable[[str], bool]```
+
+```python
+from manokit import Email
+
+def better_email_validator(addr: str) -> bool:
+    return addr.endswith("@our_company.com")
+
+email = Email("smtp.gmail.com", 587)
+email.login(username="you@our_company.com", password="manokit_is_cool")
+email.set_custom_email_validator(better_email_validator)
+email.add_recipient("buddy@our_company.com") # This will pass
+email.add_bcc("spy@rival_corp.com") # This will raise an exception
+```
 
 #### Adding attachments
 Sometimes we need to send an email with a file attached to it. To attach the file to your email, simply call the `add_attachment` function and provide a path to the file.
