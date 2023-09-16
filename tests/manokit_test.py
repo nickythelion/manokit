@@ -86,13 +86,36 @@ class ManokitTestCase(unittest.TestCase):
         validator: Callable[[str], bool] = lambda addr: addr.endswith(
             "@examplecorp.com"
         )
-        self.email.set_custom_email_validator(validator=validator)
+        self.email.set_custom_email_validator(
+            validator=validator,
+            scopes=["all"],
+        )
 
         assert (
-            self.email._check_if_valid_email_address("boss@examplecorp.com")
+            self.email._check_if_valid_email_address(
+                "boss@examplecorp.com",
+                "cc",
+            )
             == True
         )
         assert (
-            self.email._check_if_valid_email_address("spy@rivalcorp.com")
+            self.email._check_if_valid_email_address(
+                "spy@rivalcorp.com",
+                "recipients",
+            )
             == False
         )
+
+    @unittest.expectedFailure
+    def test_set_custom_email_validator_scopes(self):
+        SCOPES = ["recipients", "bcc"]
+
+        validator: Callable[[str], bool] = lambda addr: addr.endswith(
+            "@examplecorp.com"
+        )
+
+        self.email.set_custom_email_validator(validator, SCOPES)
+
+        self.email.add_recipient("buddy@examplecorp.com")
+        self.email.add_bcc("boss@examplecorp.com")
+        self.email.add_bcc("spy@rivalcorp.com")
