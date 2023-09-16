@@ -16,7 +16,7 @@
 from email.mime.base import MIMEBase
 from pathlib import Path
 import re
-from typing import Any, Callable, Self, Set
+from typing import Any, Callable, List, Literal, Self, Set
 import ssl
 from manokit.exceptions import (
     AttachmentError,
@@ -54,19 +54,25 @@ class Email:
         * FILESIZE_LIMIT (int): A limit on total size of attachments.
         * available_filesize (int): How much free space is available for attachments
         * timestamp (datetime.datetime): A timestamp of when the email was created
+        * email_validators (Dict[str, (str) -> bool]): a dictionary that maps different scopes to different validators
     """
 
     # Maybe we can add an ability for the end user to use custom validators?
-    def _check_if_valid_email_address(self, address: str) -> bool:
+    def _check_if_valid_email_address(
+        self,
+        address: str,
+        scope: Literal["author", "recipients", "cc", "bcc"],
+    ) -> bool:
         """Checks whether an email address is valid by calling a validator function.
 
         Args:
             address (str): an email address
+            scope (author | recipients | cc | bcc): a scope that will be used
 
         Returns:
             bool: True if the email address is valid, False otherwise
         """
-        return self.email_validator(address)
+        return self.email_validators[scope](address)
 
     def _default_email_validator(self, address: str) -> bool:
         """Checks whether an email address is valid. This validator can be overridden by the user.
@@ -115,7 +121,12 @@ class Email:
 
         self.FILESIZE_LIMIT = filesize_limit
         self.available_filesize = filesize_limit
-        self.email_validator = self._default_email_validator
+        self.email_validators = {
+            "author": self._default_email_validator,
+            "recipients": self._default_email_validator,
+            "cc": self._default_email_validator,
+            "bcc": self._default_email_validator,
+        }
 
         # Maybe move it to send() function because it is used only there
         self.timestamp = datetime.datetime.now()
@@ -142,9 +153,9 @@ class Email:
             NotAValidEmailAddressError: the address email is invalid
         """
 
-        if not self._check_if_valid_email_address(username):
+        if not self._check_if_valid_email_address(username, "author"):
             raise NotAValidEmailAddressError(
-                f"address {username} is not a valid email address"
+                f"address {username} has failed validation"
             )
 
         if use_starttls:
@@ -180,9 +191,9 @@ class Email:
         Raises:
             NotAValidEmailAddressError: the address email is invalid
         """
-        if not self._check_if_valid_email_address(address):
+        if not self._check_if_valid_email_address(address, "recipients"):
             raise NotAValidEmailAddressError(
-                f"address {address} is not a valid email address"
+                f"address {address} has failed validation"
             )
 
         if (address not in self.cc) and (address not in self.bcc):
@@ -202,9 +213,9 @@ class Email:
         Raises:
             NotAValidEmailAddressError: the address email is invalid
         """
-        if not self._check_if_valid_email_address(address):
+        if not self._check_if_valid_email_address(address, "cc"):
             raise NotAValidEmailAddressError(
-                f"address {address} is not a valid email address"
+                f"address {address} has failed validation"
             )
 
         if (address not in self.rec) and (address not in self.bcc):
@@ -224,9 +235,9 @@ class Email:
         Raises:
             NotAValidEmailAddressError: the address email is invalid
         """
-        if not self._check_if_valid_email_address(address):
+        if not self._check_if_valid_email_address(address, "bcc"):
             raise NotAValidEmailAddressError(
-                f"address {address} is not a valid email address"
+                f"address {address} has failed validation"
             )
 
         if (address not in self.rec) and (address not in self.cc):
@@ -261,14 +272,39 @@ class Email:
         return self
 
     def set_custom_email_validator(
-        self, validator: "Callable[[str], bool]"
+        self,
+        validator: "Callable[[str], bool]",
+        scopes: List[Literal["all", "author", "recipients", "cc", "bcc"]] = [
+            "all"
+        ],
     ) -> None:
         """Changes an email validator to the one defined by the user. This is useful in case the user finds default validation insufficient, or the validation needs to be set programmatically
 
         Args:
-            validator (Callable[[str], bool]): A function that takes a single parameter of type 'str' and returns a boolean
+            validator ((str) -> bool): A function that takes a single parameter of type 'str' and returns a boolean
+            scope (List[all | author | recipients | cc | bcc], optional): what the validator will be scoped to. Available scopes:
+                * all - use this validator for validation of all email addresses. This is the default value
+                * author - use this email for validating only the sender's email. If this is the case, this function needs to be called before 'login()'
+                * recipients - use this email for validating only the recipients' emails.
+                * cc - use this email for validating only the addresses that will be CC'd into the email
+                * bcc - use this email for validating only the addresses that will be BCC'd into the email
+
+        Raises:
+            ValueError: if provided scope is not in the list of allowed scopes
         """
-        self.email_validator = validator
+
+        if "all" in scopes:
+            self.email_validators["author"] = validator
+            self.email_validators["recipients"] = validator
+            self.email_validators["cc"] = validator
+            self.email_validators["bcc"] = validator
+            return
+
+        for s in scopes:
+            if s not in ["all", "author", "recipients", "cc", "bcc"]:
+                raise ValueError(f"scope '{s}' if invalid")
+
+            self.email_validators[s] = validator
 
     def add_attachment(self, path: str) -> Self:
         """Adds an attachments to an email. This has no effect if an attachment already has been added or the file has a size of 0 bytes
