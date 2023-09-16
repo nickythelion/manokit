@@ -205,7 +205,26 @@ email.set_custom_email_validator(better_email_validator)
 email.add_recipient("buddy@our_company.com") # This will pass
 email.add_bcc("spy@rival_corp.com") # This will raise an exception
 ```
+Manokit also implements validation scopes. That means that, if you want to apply your custom validator only to certain parts, e.g. only to people who are BCC'd into the email, you can do it.
+```python
+from manokit import Email
 
+def check_who_is_in_bcc(addr: str) -> bool:
+    return addr.endswith("@our_company.com")
+
+email = Email("smtp.gmail.com", 587)
+email.login(username="you@our_company.com", password="manokit_is_cool")
+email.set_custom_email_validator(check_who_is_in_bcc, scopes=["bcc"])
+email.add_recipient("client@clientperonal.org") # This will pass
+email.add_cc("clientswife@gmail.com") # This will also pass
+email.add_bcc("spy@rival_corp.com") # This will raise an exception
+```
+Available scopes:
+- `all` -- apply your validation rules to all addresses. This is the default option used by Manokit
+- `author` -- apply your validation rules only to the sender's email. This validator will be applied during `login()`, so the setter needs to be called before that
+- `recipients` -- apply your validation rules only to recipients' addresses
+- `cc` -- apply your validation rules only to addresses that will be CC'd into the email
+- `bcc` -- apply your validation rules only to addresses that will be BCC'd into the email
 #### Adding attachments
 Sometimes we need to send an email with a file attached to it. To attach the file to your email, simply call the `add_attachment` function and provide a path to the file.
 ```python
