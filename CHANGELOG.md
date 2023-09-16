@@ -1,6 +1,14 @@
 ## Changelog
 
-##### [v2.0.0](https://github.com/nickythelion/manokit/releases/tag/v2.0.0) - Latest
+#### [v2.1.0](https://github.com/nickythelion/manokit/releases/tag/v2.1.0) - Latest
+**New features**
+- Added the ability to customize email validation logic
+- Added the ability to scope custom validation logic
+
+**Bugfixes and improvements**
+- Minor bugfixes and improvements
+
+##### [v2.0.0](https://github.com/nickythelion/manokit/releases/tag/v2.0.0)
 **New features**
 -   Added the ability to CC emails
 -   Added the ability to BCC emails
